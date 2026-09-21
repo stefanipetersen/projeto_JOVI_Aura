@@ -23,16 +23,16 @@ class MontageManager {
       this.selectedPhotoIds = [...photoIds];
     }
 
-    const modal = document.getElementById('montage-modal');
-    if (!modal) return;
-
-    modal.classList.remove('hidden');
+    if (window.joviApp) {
+      window.joviApp.openModal('montage-modal');
+    }
     this.showAiSkeletonLoading();
   }
 
   closeMontageModal() {
-    const modal = document.getElementById('montage-modal');
-    if (modal) modal.classList.add('hidden');
+    if (window.joviApp) {
+      window.joviApp.closeModal('montage-modal');
+    }
   }
 
   showAiSkeletonLoading() {
@@ -86,7 +86,7 @@ class MontageManager {
             ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md' 
             : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
         }">
-        <i class="lucide-${l.icon} w-3.5 h-3.5"></i> ${l.name}
+        <i data-lucide="${l.icon}" class="w-3.5 h-3.5"></i> ${l.name}
       </button>
     `).join('');
 
@@ -161,6 +161,7 @@ class MontageManager {
     }
 
     previewContainer.innerHTML = layoutHtml;
+    if (window.lucide) window.lucide.createIcons();
   }
 
   shareMontage() {

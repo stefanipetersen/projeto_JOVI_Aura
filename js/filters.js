@@ -110,7 +110,7 @@ class FilterManager {
         <div class="relative h-44 overflow-hidden bg-slate-900">
           <img src="${sampleImg}" alt="${filter.name}" class="w-full h-full object-cover transition-all" style="filter: ${filter.cssFilter};" />
           <div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg text-xs text-white font-medium flex items-center gap-1.5">
-            <i class="lucide-sparkles text-amber-400 w-3.5 h-3.5"></i>
+            <i data-lucide="sparkles" class="text-amber-400 w-3.5 h-3.5"></i>
             Preset Salvo
           </div>
         </div>
@@ -124,12 +124,14 @@ class FilterManager {
           <div class="mt-4 flex gap-2">
             <button onclick="window.joviFilters.applyFilterToCamera('${filter.id}')" 
               class="flex-1 py-2 px-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-xs font-semibold shadow-md shadow-indigo-500/20 hover:opacity-95 transition flex items-center justify-center gap-1">
-              <i class="lucide-camera w-3.5 h-3.5"></i> Usar na Câmera
+              <i data-lucide="camera" class="w-3.5 h-3.5"></i> Usar na Câmera
             </button>
           </div>
         </div>
       </div>
     `).join('');
+
+    if (window.lucide) window.lucide.createIcons();
   }
 
   applyFilterToCamera(filterId) {

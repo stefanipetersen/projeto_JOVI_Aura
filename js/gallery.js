@@ -39,11 +39,12 @@ class GalleryManager {
     if (!photos.length) {
       gridEl.innerHTML = `
         <div class="col-span-full py-16 text-center text-slate-400 dark:text-slate-500">
-          <i class="lucide-image-off w-12 h-12 mx-auto mb-3 opacity-50"></i>
+          <i data-lucide="image-off" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
           <p class="font-semibold text-base">Nenhuma foto encontrada</p>
           <p class="text-xs mt-1">Tente mudar o termo da busca ou selecione outra categoria.</p>
         </div>
       `;
+      if (window.lucide) window.lucide.createIcons();
       return;
     }
 
@@ -71,7 +72,7 @@ class GalleryManager {
               <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/30 backdrop-blur text-white">
                 ${photo.category}
               </span>
-              ${photo.favorite ? '<i class="lucide-heart w-4 h-4 text-rose-500 fill-rose-500"></i>' : ''}
+              ${photo.favorite ? '<i data-lucide="heart" class="w-4 h-4 text-rose-500 fill-rose-500"></i>' : ''}
             </div>
             <div>
               <p class="text-xs font-bold text-white truncate">${photo.title}</p>
@@ -86,12 +87,14 @@ class GalleryManager {
             <div class="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center border-2 ${
               isSelected ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-black/40 border-white text-transparent'
             }">
-              <i class="lucide-check w-3.5 h-3.5"></i>
+              <i data-lucide="check" class="w-3.5 h-3.5"></i>
             </div>
           ` : ''}
         </div>
       `;
     }).join('');
+
+    if (window.lucide) window.lucide.createIcons();
   }
 
   setCategory(category) {
@@ -159,9 +162,6 @@ class GalleryManager {
   renderDetailModal(photoId) {
     const photo = window.joviStore.getPhotoById(photoId);
     if (!photo) return;
-
-    const modal = document.getElementById('photo-detail-modal');
-    if (!modal) return;
 
     const filters = window.joviStore.getFilters();
     const currentFilter = filters.find(f => f.id === photo.filterId);
@@ -236,7 +236,9 @@ class GalleryManager {
       };
     }
 
-    modal.classList.remove('hidden');
+    if (window.joviApp) {
+      window.joviApp.openModal('photo-detail-modal');
+    }
   }
 
   updatePhotoFilter(photoId, filterId) {
@@ -251,8 +253,9 @@ class GalleryManager {
   }
 
   closeDetailModal() {
-    const modal = document.getElementById('photo-detail-modal');
-    if (modal) modal.classList.add('hidden');
+    if (window.joviApp) {
+      window.joviApp.closeModal('photo-detail-modal');
+    }
   }
 
   triggerMultiAiMontage() {

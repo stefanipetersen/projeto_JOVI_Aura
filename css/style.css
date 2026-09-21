@@ -12,6 +12,37 @@ body {
   user-select: none;
 }
 
+/* Minimalist Pixel-Perfect Back Button */
+.btn-back-minimal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 14px 0 8px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  transition: all 0.15s ease-in-out;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.btn-back-minimal span {
+  display: inline-block;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.btn-back-minimal svg,
+.btn-back-minimal i {
+  display: inline-block;
+  flex-shrink: 0;
+  margin-right: 3px;
+}
+
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 4px;
