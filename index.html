@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>JOVI Aura — Memórias Digitais Mobile-First</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            aura: {
+              50: '#f4f3ff',
+              100: '#ebe9fe',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- ==================== SPLASH SCREEN ==================== -->
+  <div id="splash-screen" class="fixed inset-0 z-50 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 flex flex-col items-center justify-center p-6 text-center">
+    <div class="relative mb-6">
+      <div class="w-24 h-24 rounded-3xl bg-gradient-to-tr from-violet-600 via-indigo-600 to-amber-400 p-0.5 shadow-2xl shadow-indigo-500/40 animate-pulse">
+        <div class="w-full h-full bg-slate-950 rounded-[22px] flex items-center justify-center">
+          <i class="lucide-sparkles text-amber-400 w-12 h-12"></i>
+        </div>
+      </div>
+      <div class="absolute -inset-4 bg-indigo-500/20 blur-2xl rounded-full -z-10"></div>
+    </div>
+
+    <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-indigo-200 to-amber-200 bg-clip-text text-transparent">
+      JOVI Aura
+    </h1>
+    <p class="text-xs text-slate-400 mt-2 max-w-xs font-medium">
+      Sua câmera, seu estilo, suas memórias — sem espera.
+    </p>
+
+    <!-- Progress Shimmer Bar -->
+    <div class="mt-8 w-48 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+      <div class="h-full bg-gradient-to-r from-violet-500 to-amber-400 rounded-full animate-pulse w-3/4"></div>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN MOBILE APP CONTAINER ==================== -->
+  <div id="app-main-container" class="hidden max-w-md mx-auto min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col relative shadow-2xl overflow-hidden border-x border-slate-200 dark:border-slate-800">
+
+    <!-- TOP APP HEADER -->
+    <header class="sticky top-0 z-30 glass-panel px-4 py-3 flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/80">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-amber-400 flex items-center justify-center shadow-md shadow-indigo-500/20">
+          <i class="lucide-sparkles text-white w-4 h-4"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">JOVI Aura</span>
+          <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold ml-1">WEB</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Theme Toggle -->
+        <button onclick="window.joviApp.toggleTheme()" class="p-2 rounded-xl bg-slate-200/60 dark:bg-slate-800/60 hover:bg-slate-300 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200">
+          <i id="theme-toggle-icon" class="lucide-sun w-5 h-5 text-amber-400"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- VIEWPORT CONTENT AREA -->
+    <main id="tab-viewport" class="flex-1 pb-24 overflow-y-auto">
+
+      <!-- ==================== TAB 1: CAMERA ==================== -->
+      <section id="view-camera" class="tab-view h-full flex flex-col">
+        <!-- Viewfinder Box -->
+        <div class="relative w-full aspect-[3/4] bg-slate-900 overflow-hidden shadow-inner flex items-center justify-center">
+          
+          <!-- Flash Overlay -->
+          <div id="camera-flash-overlay" class="absolute inset-0 bg-white pointer-events-none z-30 opacity-0"></div>
+
+          <!-- Video Stream -->
+          <video id="camera-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
+
+          <!-- Simulated Camera Fallback (when no webcam permission) -->
+          <div id="camera-simulated-fallback" class="hidden relative w-full h-full">
+            <img id="simulated-camera-img" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover" />
+            <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] text-amber-300 font-bold flex items-center gap-1">
+              <i class="lucide-aperture w-3 h-3"></i> Câmera Simulada Ativa
+            </div>
+          </div>
+
+          <!-- Top Viewfinder Controls -->
+          <div class="absolute top-3 inset-x-3 flex justify-between items-center z-20">
+            <button onclick="window.joviCamera.toggleCameraFacing(document.getElementById('camera-video'))" class="p-2.5 rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-black/70 transition">
+              <i class="lucide-switch-camera w-4 h-4"></i>
+            </button>
+
+            <span class="px-3 py-1 rounded-full bg-black/50 backdrop-blur-md text-xs font-bold text-white flex items-center gap-1">
+              <i class="lucide-sparkles text-amber-400 w-3.5 h-3.5"></i> JOVI Lens HD
+            </span>
+          </div>
+
+          <!-- Bottom Filter Picker Carousel inside Viewfinder -->
+          <div class="absolute bottom-3 inset-x-0 px-4 z-20">
+            <div class="flex gap-2 overflow-x-auto no-scrollbar py-2 px-1">
+              <button onclick="window.joviFilters.applyFilterToCamera(null)" class="px-3 py-1.5 rounded-full text-xs font-bold bg-black/60 backdrop-blur-md text-white border border-white/20 whitespace-nowrap">
+                Sem Filtro
+              </button>
+              <button onclick="window.joviFilters.applyFilterToCamera('filter_warm')" class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/80 backdrop-blur-md text-white border border-amber-300/40 whitespace-nowrap">
+                Aura Warm
+              </button>
+              <button onclick="window.joviFilters.applyFilterToCamera('filter_vintage')" class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-700/80 backdrop-blur-md text-white border border-amber-500/40 whitespace-nowrap">
+                Retro 90s
+              </button>
+              <button onclick="window.joviFilters.applyFilterToCamera('filter_cyber')" class="px-3 py-1.5 rounded-full text-xs font-bold bg-teal-600/80 backdrop-blur-md text-white border border-teal-400/40 whitespace-nowrap">
+                Cyber Teal
+              </button>
+              <button onclick="window.joviFilters.applyFilterToCamera('filter_clean')" class="px-3 py-1.5 rounded-full text-xs font-bold bg-indigo-600/80 backdrop-blur-md text-white border border-indigo-400/40 whitespace-nowrap">
+                Crisp Natural
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shutter Capture Controls Bar -->
+        <div class="p-6 bg-slate-900 flex items-center justify-around border-t border-slate-800">
+          <!-- Last Photo Thumbnail -->
+          <button onclick="window.joviApp.switchTab('gallery')" class="w-12 h-12 rounded-2xl overflow-hidden border-2 border-slate-700 bg-slate-800 shadow-md relative group">
+            <img id="camera-last-photo-thumb" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover" />
+          </button>
+
+          <!-- Main Shutter Button -->
+          <button onclick="window.joviCamera.capturePhoto()" class="w-20 h-20 rounded-full border-4 border-white bg-rose-500 flex items-center justify-center shadow-xl shadow-rose-500/30 transition transform active:scale-90 focus:outline-none">
+            <div class="w-16 h-16 rounded-full bg-rose-500 border-2 border-white/50"></div>
+          </button>
+
+          <!-- Create Filter Shortcut -->
+          <button onclick="window.joviApp.switchTab('filters')" class="w-12 h-12 rounded-2xl bg-slate-800 text-amber-400 flex items-center justify-center shadow-md border border-slate-700">
+            <i class="lucide-sliders-horizontal w-5 h-5"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 2: GALLERY ==================== -->
+      <section id="view-gallery" class="tab-view hidden p-4 flex-col gap-4">
+        <!-- Search & Multi-Select Bar -->
+        <div class="flex gap-2 items-center">
+          <div class="relative flex-1">
+            <i class="lucide-search absolute left-3.5 top-3 text-slate-400 w-4 h-4"></i>
+            <input type="text" id="gallery-search-input" placeholder="Buscar por título, tag ou categoria..." 
+              class="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm" />
+          </div>
+          <button id="gallery-multi-select-btn" onclick="window.joviGallery.toggleMultiSelect()" class="py-2.5 px-3 rounded-2xl text-xs font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 whitespace-nowrap">
+            Selecionar Várias
+          </button>
+        </div>
+
+        <!-- Category Filter Tabs -->
+        <div class="flex gap-2 overflow-x-auto no-scrollbar py-1">
+          <button data-category="Todas" onclick="window.joviGallery.setCategory('Todas')" class="gallery-category-pill px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-indigo-500/20 whitespace-nowrap transition">
+            Todas
+          </button>
+          <button data-category="Pessoa" onclick="window.joviGallery.setCategory('Pessoa')" class="gallery-category-pill px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 whitespace-nowrap transition">
+            👤 Pessoa
+          </button>
+          <button data-category="Viagem" onclick="window.joviGallery.setCategory('Viagem')" class="gallery-category-pill px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 whitespace-nowrap transition">
+            ✈️ Viagem
+          </button>
+          <button data-category="Restaurante" onclick="window.joviGallery.setCategory('Restaurante')" class="gallery-category-pill px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 whitespace-nowrap transition">
+            🍷 Restaurante
+          </button>
+          <button data-category="Evento" onclick="window.joviGallery.setCategory('Evento')" class="gallery-category-pill px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 whitespace-nowrap transition">
+            🎉 Evento
+          </button>
+          <button data-category="Comida" onclick="window.joviGallery.setCategory('Comida')" class="gallery-category-pill px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 whitespace-nowrap transition">
+            🍕 Comida
+          </button>
+          <button data-category="Momentos" onclick="window.joviGallery.setCategory('Momentos')" class="gallery-category-pill px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 whitespace-nowrap transition">
+            ✨ Momentos
+          </button>
+        </div>
+
+        <!-- Header Status -->
+        <div class="flex justify-between items-center px-1">
+          <span id="gallery-photo-count" class="text-xs font-semibold text-slate-500 dark:text-slate-400">Carregando...</span>
+          <span class="text-[11px] font-bold text-indigo-500 flex items-center gap-1">
+            <i class="lucide-sparkles w-3.5 h-3.5"></i> Organização Inteligente
+          </span>
+        </div>
+
+        <!-- Photo Grid -->
+        <div id="gallery-grid" class="grid grid-cols-2 gap-3">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Multi-Select Floating Toolbar -->
+        <div id="gallery-multi-action-toolbar" class="hidden sticky bottom-20 z-20 p-3 glass-panel rounded-2xl border border-indigo-500/30 shadow-2xl flex items-center justify-between">
+          <span id="multi-selected-count" class="text-xs font-bold text-indigo-600 dark:text-indigo-400">0 selecionadas</span>
+          <button onclick="window.joviGallery.triggerMultiAiMontage()" class="py-2 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-1.5">
+            <i class="lucide-sparkles w-3.5 h-3.5"></i> Criar Post com IA
+          </button>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 3: MEMORIES & CALENDAR ==================== -->
+      <section id="view-memories" class="tab-view hidden p-4 flex-col gap-4">
+        <div class="flex justify-between items-center mb-1">
+          <h2 class="text-xl font-extrabold text-slate-800 dark:text-white tracking-tight">Memórias & Calendário</h2>
+          <span class="text-xs text-indigo-500 font-bold flex items-center gap-1">
+            <i class="lucide-calendar w-4 h-4"></i> Conectado
+          </span>
+        </div>
+
+        <!-- Widgets Container (Emotional Memories) -->
+        <div id="memories-widgets-container"></div>
+
+        <!-- Events Section Title -->
+        <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300 mt-2">Próximos Eventos e Sugestões</h3>
+        
+        <!-- Events List -->
+        <div id="memories-events-list" class="flex flex-col gap-3"></div>
+      </section>
+
+      <!-- ==================== TAB 4: FILTERS CREATOR ==================== -->
+      <section id="view-filters" class="tab-view hidden p-4 flex-col gap-5">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-extrabold text-slate-800 dark:text-white tracking-tight">Filtros Personalizados</h2>
+          <button onclick="window.joviFilters.resetSliders()" class="text-xs font-bold text-indigo-500 hover:underline">
+            Resetar Sliders
+          </button>
+        </div>
+
+        <!-- Filter Creator Tool Card -->
+        <div class="glass-panel rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-xl flex flex-col gap-4">
+          <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+            <i class="lucide-sliders text-indigo-500 w-4 h-4"></i> Criar Novo Filtro Customizado
+          </h3>
+
+          <!-- Interactive Live Preview -->
+          <div class="relative h-56 rounded-2xl overflow-hidden bg-slate-900 shadow-inner">
+            <img id="filter-creator-preview-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" 
+              class="w-full h-full object-cover transition-all duration-75" />
+            
+            <div class="absolute bottom-2 left-2 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-xl text-[10px] font-mono text-amber-300 truncate max-w-[90%]">
+              <span id="filter-css-code">Normal (Sem alterações)</span>
+            </div>
+          </div>
+
+          <!-- Slider Controls -->
+          <div class="grid grid-cols-2 gap-x-4 gap-y-3 pt-2">
+            <div>
+              <div class="flex justify-between text-[11px] font-bold mb-1">
+                <span>Brilho</span>
+                <span class="text-indigo-500 font-mono">100%</span>
+              </div>
+              <input type="range" id="slider-brightness" min="50" max="160" value="100" 
+                oninput="window.joviFilters.setSetting('brightness', this.value)" class="w-full accent-indigo-600" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-[11px] font-bold mb-1">
+                <span>Contraste</span>
+                <span class="text-indigo-500 font-mono">100%</span>
+              </div>
+              <input type="range" id="slider-contrast" min="50" max="160" value="100" 
+                oninput="window.joviFilters.setSetting('contrast', this.value)" class="w-full accent-indigo-600" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-[11px] font-bold mb-1">
+                <span>Saturação</span>
+                <span class="text-indigo-500 font-mono">100%</span>
+              </div>
+              <input type="range" id="slider-saturation" min="0" max="200" value="100" 
+                oninput="window.joviFilters.setSetting('saturation', this.value)" class="w-full accent-indigo-600" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-[11px] font-bold mb-1">
+                <span>Tom Sépiado</span>
+                <span class="text-indigo-500 font-mono">0%</span>
+              </div>
+              <input type="range" id="slider-sepia" min="0" max="100" value="0" 
+                oninput="window.joviFilters.setSetting('sepia', this.value)" class="w-full accent-indigo-600" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-[11px] font-bold mb-1">
+                <span>Matiz (Hue)</span>
+                <span class="text-indigo-500 font-mono">0°</span>
+              </div>
+              <input type="range" id="slider-hue" min="0" max="360" value="0" 
+                oninput="window.joviFilters.setSetting('hue', this.value)" class="w-full accent-indigo-600" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-[11px] font-bold mb-1">
+                <span>Calidez (Warmth)</span>
+                <span class="text-indigo-500 font-mono">0</span>
+              </div>
+              <input type="range" id="slider-warmth" min="-30" max="30" value="0" 
+                oninput="window.joviFilters.setSetting('warmth', this.value)" class="w-full accent-indigo-600" />
+            </div>
+          </div>
+
+          <!-- Save Preset Form -->
+          <div class="mt-2 flex gap-2">
+            <input type="text" id="new-filter-name-input" placeholder="Nome do seu filtro (ex: Vintage Aura)" 
+              class="flex-1 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <button onclick="window.joviFilters.saveCurrentFilter(document.getElementById('new-filter-name-input').value)" 
+              class="py-2.5 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-xs rounded-xl shadow-lg hover:opacity-90 transition">
+              Salvar Filtro
+            </button>
+          </div>
+        </div>
+
+        <!-- Presets Grid -->
+        <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300">Filtros Salvos e Disponíveis</h3>
+        <div id="filters-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </section>
+
+      <!-- ==================== TAB 5: PROFILE & SETTINGS ==================== -->
+      <section id="view-profile" class="tab-view hidden p-4 flex-col gap-5">
+        <!-- User Header Card -->
+        <div class="glass-panel rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-xl flex items-center gap-4">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-violet-600 to-amber-400 p-0.5 shadow-lg">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover rounded-full" />
+          </div>
+          <div>
+            <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Stefano</h3>
+            <p class="text-xs text-indigo-500 font-semibold">Fotógrafo & Criador Memórias</p>
+            <span class="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/20 text-amber-500 border border-amber-400/30">
+              JOVI Aura Pro
+            </span>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-3 gap-3">
+          <div class="glass-panel p-4 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800">
+            <span id="profile-stat-photos" class="block text-xl font-extrabold text-indigo-600 dark:text-indigo-400">0</span>
+            <span class="text-[10px] font-bold text-slate-500">Fotos Salvas</span>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800">
+            <span id="profile-stat-filters" class="block text-xl font-extrabold text-amber-500">0</span>
+            <span class="text-[10px] font-bold text-slate-500">Filtros</span>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800">
+            <span id="profile-stat-events" class="block text-xl font-extrabold text-emerald-500">0</span>
+            <span class="text-[10px] font-bold text-slate-500">Eventos</span>
+          </div>
+        </div>
+
+        <!-- About Concept Card -->
+        <div class="glass-panel rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 space-y-2">
+          <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400">Conceito do Projeto</h4>
+          <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            "Sua câmera, seu estilo, suas memórias, sem espera." — O JOVI Aura é uma plataforma 100% WEB mobile-first focada na jornada pós-captura.
+          </p>
+        </div>
+
+        <!-- Reset Button -->
+        <button onclick="localStorage.clear(); location.reload();" class="py-3 px-4 rounded-2xl bg-rose-500/10 text-rose-500 font-bold text-xs border border-rose-500/30 hover:bg-rose-500/20 transition">
+          Restaurar Dados de Demonstração
+        </button>
+      </section>
+
+    </main>
+
+    <!-- ==================== BOTTOM NAVIGATION BAR ==================== -->
+    <nav class="fixed bottom-0 inset-x-0 max-w-md mx-auto z-40 glass-nav px-3 py-2 flex items-center justify-around">
+      <button data-tab="camera" onclick="window.joviApp.switchTab('camera')" class="nav-tab-item flex flex-col items-center gap-1 text-indigo-600 dark:text-indigo-400 font-bold transition">
+        <i class="lucide-camera w-5 h-5"></i>
+        <span class="text-[10px]">Câmera</span>
+      </button>
+
+      <button data-tab="gallery" onclick="window.joviApp.switchTab('gallery')" class="nav-tab-item flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 transition font-medium">
+        <i class="lucide-image w-5 h-5"></i>
+        <span class="text-[10px]">Galeria</span>
+      </button>
+
+      <button data-tab="memories" onclick="window.joviApp.switchTab('memories')" class="nav-tab-item flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 transition font-medium">
+        <i class="lucide-calendar-heart w-5 h-5"></i>
+        <span class="text-[10px]">Memórias</span>
+      </button>
+
+      <button data-tab="filters" onclick="window.joviApp.switchTab('filters')" class="nav-tab-item flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 transition font-medium">
+        <i class="lucide-sparkles w-5 h-5"></i>
+        <span class="text-[10px]">Filtros</span>
+      </button>
+
+      <button data-tab="profile" onclick="window.joviApp.switchTab('profile')" class="nav-tab-item flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 transition font-medium">
+        <i class="lucide-user w-5 h-5"></i>
+        <span class="text-[10px]">Perfil</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. PHOTO DETAIL MODAL -->
+  <div id="photo-detail-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md p-4 flex items-center justify-center animate-fade-in">
+    <div class="glass-panel w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-slate-700 max-h-[90vh] flex flex-col bg-slate-900">
+      
+      <!-- Modal Header -->
+      <div class="p-4 flex items-center justify-between border-b border-slate-800">
+        <span id="detail-photo-category" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-400">
+          Categoria
+        </span>
+        <button onclick="window.joviGallery.closeDetailModal()" class="p-1 rounded-full text-slate-400 hover:text-white">
+          <i class="lucide-x w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Main Photo Image -->
+      <div class="relative h-64 bg-black overflow-hidden flex items-center justify-center">
+        <img id="detail-photo-img" class="w-full h-full object-cover transition-all" />
+      </div>
+
+      <!-- Photo Metadata & Controls -->
+      <div class="p-5 flex-1 overflow-y-auto space-y-4">
+        <!-- Title Edit -->
+        <div>
+          <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Título da Foto</label>
+          <div class="flex gap-2">
+            <input type="text" id="detail-photo-title-input" class="flex-1 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <button id="detail-save-title-btn" class="px-3 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">Salvar</button>
+          </div>
+        </div>
+
+        <!-- Applied Filter -->
+        <div>
+          <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Filtro Aplicado</label>
+          <select id="detail-photo-filter-select" class="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-white focus:outline-none"></select>
+        </div>
+
+        <!-- Tags -->
+        <div>
+          <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Tags Associadas</label>
+          <div id="detail-photo-tags-container" class="flex flex-wrap gap-1.5 mb-2"></div>
+
+          <!-- Add New Tag -->
+          <div class="flex gap-2 mt-2">
+            <input type="text" id="detail-new-tag-input" placeholder="Nova tag..." class="flex-1 px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white" />
+            <button id="detail-add-tag-btn" class="px-3 py-1.5 bg-slate-700 text-white rounded-xl text-xs font-bold">+ Tag</button>
+          </div>
+        </div>
+
+        <!-- Date Info -->
+        <p class="text-[10px] text-slate-500">Capturada em: <span id="detail-photo-date" class="font-mono text-slate-400"></span></p>
+
+        <!-- Actions -->
+        <div class="pt-3 border-t border-slate-800 flex gap-2">
+          <button id="detail-share-btn" class="flex-1 py-2.5 px-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5">
+            <i class="lucide-share-2 w-4 h-4"></i> Compartilhar
+          </button>
+          <button id="detail-delete-btn" class="py-2.5 px-3 bg-rose-500/10 text-rose-500 border border-rose-500/30 rounded-xl text-xs font-bold hover:bg-rose-500/20">
+            <i class="lucide-trash-2 w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. SIMULATED AI MONTAGE MODAL -->
+  <div id="montage-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md p-4 flex items-center justify-center animate-fade-in">
+    <div class="glass-panel w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-slate-700 bg-slate-900 p-6 flex flex-col gap-4">
+      
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-extrabold text-base text-white flex items-center gap-2">
+          <i class="lucide-sparkles text-amber-400 w-4 h-4"></i> Montagem com IA — JOVI Aura
+        </h3>
+        <button onclick="window.joviMontage.closeMontageModal()" class="text-slate-400 hover:text-white">
+          <i class="lucide-x w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- AI Loading State -->
+      <div id="montage-ai-loading" class="py-12 flex flex-col items-center text-center">
+        <div class="relative mb-4">
+          <div class="w-16 h-16 rounded-full border-4 border-indigo-500/30 border-t-indigo-500 animate-spin"></div>
+          <i class="lucide-sparkles text-amber-400 w-6 h-6 absolute inset-0 m-auto"></i>
+        </div>
+        <p id="montage-ai-status" class="text-sm font-bold text-slate-200">Analisando imagens e gerando layouts...</p>
+        <p class="text-xs text-slate-400 mt-1">Aguarde alguns segundos</p>
+      </div>
+
+      <!-- AI Editor State -->
+      <div id="montage-editor" class="hidden flex flex-col gap-4">
+        <!-- Layout Selector Tabs -->
+        <div id="montage-layout-options" class="flex gap-1.5 overflow-x-auto no-scrollbar"></div>
+
+        <!-- Dynamic Preview Canvas -->
+        <div id="montage-preview-canvas" class="w-full"></div>
+
+        <div class="flex gap-2 mt-2">
+          <button onclick="window.joviMontage.shareMontage()" class="flex-1 py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-extrabold rounded-2xl shadow-lg flex items-center justify-center gap-2 text-xs">
+            <i class="lucide-share-2 w-4 h-4"></i> Compartilhar Post Final
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 3. FALLBACK SHARE MODAL -->
+  <div id="share-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md p-4 flex items-center justify-center animate-fade-in">
+    <div class="glass-panel w-full max-w-xs rounded-3xl p-5 border border-slate-700 bg-slate-900 text-center space-y-4">
+      <h4 id="share-modal-title" class="font-extrabold text-base text-white">Compartilhar</h4>
+      <p id="share-modal-text" class="text-xs text-slate-400"></p>
+
+      <div class="grid grid-cols-2 gap-2 pt-2">
+        <button onclick="window.joviSharing.copyLinkToClipboard()" class="p-3 rounded-2xl bg-slate-800 text-xs font-bold text-white hover:bg-slate-700 flex flex-col items-center gap-1.5">
+          <i class="lucide-link w-5 h-5 text-indigo-400"></i> Copiar Link
+        </button>
+        <button onclick="window.joviSharing.simulatedSocialShare('Instagram')" class="p-3 rounded-2xl bg-slate-800 text-xs font-bold text-white hover:bg-slate-700 flex flex-col items-center gap-1.5">
+          <i class="lucide-instagram w-5 h-5 text-pink-400"></i> Instagram
+        </button>
+        <button onclick="window.joviSharing.simulatedSocialShare('WhatsApp')" class="p-3 rounded-2xl bg-slate-800 text-xs font-bold text-white hover:bg-slate-700 flex flex-col items-center gap-1.5">
+          <i class="lucide-message-circle w-5 h-5 text-emerald-400"></i> WhatsApp
+        </button>
+        <button onclick="window.joviSharing.closeShareModal()" class="p-3 rounded-2xl bg-slate-800 text-xs font-bold text-slate-400 hover:bg-slate-700 flex flex-col items-center gap-1.5">
+          <i class="lucide-x w-5 h-5"></i> Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS CONTAINER -->
+  <div id="toast-container" class="fixed top-4 inset-x-4 z-50 flex flex-col items-center gap-2 pointer-events-none"></div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/store.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/tags.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/memories.js"></script>
+  <script src="js/montage.js"></script>
+  <script src="js/sharing.js"></script>
+  <script src="js/gallery.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
